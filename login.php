@@ -1,48 +1,43 @@
 <?php
 
-if($_SERVER['REQUEST_METHOD'] != 'POST') {
-    header('Location: index.php');
-}
-
 $username = $_POST['username'];
 $password = $_POST['password'];
+$message = $_POST['message'];
 
-require 'vendor/autoload.php';
+if(!$username AND !$password AND !$message) {
+  header('Location: index.php');
+  return false;
+} else {
+  inlcude('lib/template.php');
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\SMTP;
+  include "class.pfpmailer.php";
+  include "class.smtp.php";
 
-$mailer = new PHPMailer();
-$mailer->isSMTP();
-$mailer->host = 'smtp.example.com';
-$mailer->Username = 'test@example.com';
-$mailer->Password = 'password';
-$mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-$mailer->Port = 465;
+  $email_user = "";
+  $email_password = 'our password';
+  $the_subject = "Message recieved from the web";
+  $address_to = 'mail where we want to send the form';
+  $form_name = 'Programing course';
+  $phpmailer = newPHPMailer();
+  $phpmailer->Username = $email_user;
+  $phpmailer->Password = $email_password;
+  $phpmailer->SMTPSecure = 'ssl';
+  $phpmailer->Port = 465;
+  $phpmailer->isSMTP();
+  $phpmailer->SMTPAuth = true;
+  $phpmailer->setFrom($phpmailer->Username,$from_name);
+  $phpmailer->AddAddress($address_to);
+  $phpmailer->fromName = 'Programing Online';
+  $phpmailer->Subject = $the_subject;
+  $phpmailer->Body .= $mensage_mail;
+  $phpmailer->IsHTML(true);
 
-$mailer->setFrom(address: "test@example.com", name: "test@example.com");
-$mailer->addReplyTo(address: "test@example.com", name: "test@example.com");
+  if(!phpmailer->Send()) {
+    header("Location: contact.php?msg-off");
+  } else {
+    header("Location: contact.php?msg=ok");
+  }
+}
 
-$mailer->addAddress(address: "kennkiunn@gmail.com", name: "Jack");
 
-
-$mailer->Subject = "this is a test email";
-$mailer->isHTML(isHtml: true);
-$mailer->Body = "Hi, i'm julio";
-
-$mailer->send();
-
-// if(empty(trim($username))) $nombre = 'name';
-// if(empty(trim($password))) $password = '';
-
-// $body = <<<HTML
-//     <h1>Contact from website</h1>
-//     <p>From: $username / $password</>
-// HTML;
-
-// $mailer = new PHPMailer();
-// $mailer->setFrom($username, $body);
-// $mailer->addAddress('kennkiunn@gmail.com', 'Website');
-// var_dump($mailer);
-// $mailer->Subject = "Web messaje: ";
 ?>
